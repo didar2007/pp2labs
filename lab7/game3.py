@@ -4,7 +4,7 @@ import sys
 
 widght, height = 800, 600
 radius = 25                
-step = 20                  
+step = 25                  
 bg_color = (255, 255, 255) 
 ball_color = (200, 20, 20) 
 
@@ -32,15 +32,19 @@ while running:
                 nx = x + step
             elif ev.key == pygame.K_UP:
                 ny = y - step
+                # ny = y - step
             elif ev.key == pygame.K_DOWN:
                 ny = y + step
             elif ev.key == pygame.K_ESCAPE:
                 running = False
 
             
-            if radius <= nx <= widght - radius and radius <= ny <= height - radius:
+            # if radius <= nx <= widght - radius and radius <= ny <= height - radius:
+            if True:
                 x, y = nx, ny
-            
+            if y < 0:
+                y = 600
+                
 
     
     screen.fill(bg_color)
