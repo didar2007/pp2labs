@@ -1,83 +1,83 @@
-import pygame
-import random
-import sys
-import time
+import pygame, random, sys, time
 
 pygame.init()
 
-SCREEN_WIDTH, SCREEN_HEIGHT = 400, 600
+W, H = 400, 600
 FPS = 60
-clock = pygame.time.Clock()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((W, H))
 pygame.display.set_caption("Simple Racing")
+clock = pygame.time.Clock()
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED   = (255, 0, 0)
-GREEN = (0, 200, 0)
-BLUE  = (0, 0, 255)
+WHITE, BLACK = (255, 255, 255), (0, 0, 0)
+RED, GREEN, BLUE, GOLD = (255, 0, 0), (0, 200, 0), (0, 0, 255), (255, 215, 0)
 
-SPEED = 5
-SCORE = 0
-COINS = 0
-N = 10  
+speed = 5
+score = 0
+coins_collected = 0
+level_up_every = 10
 
-font_small = pygame.font.SysFont("Verdana", 20)
+font = pygame.font.SysFont("Verdana", 20)
 font_big = pygame.font.SysFont("Verdana", 60)
-game_over_surf = font_big.render("Game Over", True, BLACK)
+game_over_text = font_big.render("Game Over", True, BLACK)
+
+
+PLAYER_IMG_PATH = "C:/Users/kalab/OneDrive/Рабочий стол/car.png"
+ENEMY_IMG_PATH  = "C:/Users/kalab/OneDrive/Рабочий стол/car_2.png"
+COIN_IMG_PATH   = "C:/Users/kalab/OneDrive/Рабочий стол/free-icon-coin-217853.png"
+
+PLAYER_IMG = pygame.image.load(PLAYER_IMG_PATH)
+ENEMY_IMG  = pygame.image.load(ENEMY_IMG_PATH)
+COIN_IMG   = pygame.image.load(COIN_IMG_PATH)
+
+PLAYER_IMG = pygame.transform.scale(PLAYER_IMG, (40, 60))
+ENEMY_IMG  = pygame.transform.scale(ENEMY_IMG, (40, 60))
+COIN_IMG   = pygame.transform.scale(COIN_IMG,  (25, 25))
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        w, h = 40, 60
-        self.image = pygame.Surface((w, h))
-        self.image.fill(BLUE)
-        self.rect = self.image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 40))
+        self.image = PLAYER_IMG
+        self.rect = self.image.get_rect(midbottom=(W // 2, H - 40))
         self.speed = 5
 
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and self.rect.left > 0:
             self.rect.x -= self.speed
-        if keys[pygame.K_RIGHT] and self.rect.right < SCREEN_WIDTH:
+        if keys[pygame.K_RIGHT] and self.rect.right < W:
             self.rect.x += self.speed
 
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        w, h = 40, 60
-        self.image = pygame.Surface((w, h))
-        self.image.fill(RED)
-        self.rect = self.image.get_rect(midtop=(random.randint(40, SCREEN_WIDTH - 40), -50))
+        self.image = ENEMY_IMG
+        self.rect = self.image.get_rect(midtop=(random.randint(40, W - 40), -50))
 
     def update(self):
-        global SCORE
-        self.rect.y += SPEED
-        if self.rect.top > SCREEN_HEIGHT:
-            SCORE += 1
-            self.rect.y = -random.randint(40, 120)
-            self.rect.x = random.randint(20, SCREEN_WIDTH - 20)
+        global score
+        self.rect.y += speed
+        if self.rect.top > H:
+            score += 1
+            self.rect.midtop = (random.randint(40, W - 40), -50)
 
 
 class Coin(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        size = 20
-        self.image = pygame.Surface((size, size), pygame.SRCALPHA)
-        pygame.draw.circle(self.image, (255, 215, 0), (size // 2, size // 2), size // 2)
-        self.rect = self.image.get_rect(center=(random.randint(30, SCREEN_WIDTH - 30), -30))
-        self.weight = random.choice([1, 3, 5])
+        self.image = COIN_IMG
+        self.rect = self.image.get_rect(center=(random.randint(30, W - 30), -30))
+        self.value = random.choice([1, 3, 5])
 
     def update(self):
-        self.rect.y += SPEED
-        if self.rect.top > SCREEN_HEIGHT:
+        self.rect.y += speed
+        if self.rect.top > H:
             self.respawn()
 
     def respawn(self):
-        self.rect.center = (random.randint(30, SCREEN_WIDTH - 30), random.randint(-150, -20))
-        self.weight = random.choice([1, 3, 5])
+        self.rect.center = (random.randint(30, W - 30), random.randint(-150, -20))
+        self.value = random.choice([1, 3, 5])
 
 
 player = Player()
@@ -88,35 +88,31 @@ all_sprites = pygame.sprite.Group(player, enemy, coin)
 enemies = pygame.sprite.Group(enemy)
 coins = pygame.sprite.Group(coin)
 
+
 running = True
 while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+    for e in pygame.event.get():
+        if e.type == pygame.QUIT:
             running = False
 
     all_sprites.update()
 
     if pygame.sprite.collide_rect(player, coin):
-        COINS += coin.weight
+        coins_collected += coin.value
         coin.respawn()
-        if COINS % N == 0:
-            SPEED += 1
+        if coins_collected % level_up_every == 0:
+            speed += 1
 
-   
     if pygame.sprite.spritecollideany(player, enemies):
-        
         screen.fill(RED)
-        screen.blit(game_over_surf, game_over_surf.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)))
+        screen.blit(game_over_text, game_over_text.get_rect(center=(W // 2, H // 2)))
         pygame.display.flip()
         time.sleep(2)
-        running = False
         break
 
-    
     screen.fill(WHITE)
-    
-    screen.blit(font_small.render(f"Score: {SCORE}", True, BLACK), (10, 10))
-    screen.blit(font_small.render(f"Coins: {COINS}", True, BLACK), (SCREEN_WIDTH - 120, 10))
+    screen.blit(font.render(f"Score: {score}", True, BLACK), (10, 10))
+    screen.blit(font.render(f"Coins: {coins_collected}", True, BLACK), (W - 120, 10))
 
     all_sprites.draw(screen)
 
@@ -125,4 +121,3 @@ while running:
 
 pygame.quit()
 sys.exit()
-
