@@ -7,7 +7,6 @@ WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Drawing Shapes")
 
-# Colors
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
@@ -15,7 +14,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
 current_color = BLACK
-filled = False  # True = заливка, False = контур
+filled = False 
 
 running = True
 drawing = False
@@ -25,7 +24,6 @@ thickness = 5
 
 screen.fill(WHITE)
 
-# ---------------- DRAWING FUNCTIONS ----------------
 def draw_square(surf, start, end, color, thick, fill):
     side = max(abs(end[0] - start[0]), abs(end[1] - start[1]))
     pygame.draw.rect(surf, color, (*start, side, side), 0 if fill else thick)
@@ -52,7 +50,6 @@ def draw_circle(surf, start, end, color, thick, fill):
     radius = int(math.dist(start, end))
     pygame.draw.circle(surf, color, start, radius, 0 if fill else thick)
 
-# ---------------- MAIN LOOP ----------------
 while running:
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
@@ -83,28 +80,23 @@ while running:
                 pygame.draw.rect(screen, WHITE, (*e.pos, thickness, thickness))
 
         elif e.type == pygame.KEYDOWN:
-            # Thickness control
             if e.key == pygame.K_EQUALS: thickness += 1
             if e.key == pygame.K_MINUS and thickness > 1: thickness -= 1
 
-            # Tool selection
             if e.key == pygame.K_1: shape = "pen"
             if e.key == pygame.K_2: shape = "square"
             if e.key == pygame.K_3: shape = "right_triangle"
             if e.key == pygame.K_4: shape = "equilateral_triangle"
             if e.key == pygame.K_5: shape = "rhombus"
             if e.key == pygame.K_6: shape = "circle"
-            if e.key == pygame.K_e: shape = "eraser"  # ластик
+            if e.key == pygame.K_e: shape = "eraser"
 
-            # Clear screen
             if e.key == pygame.K_c:
                 screen.fill(WHITE)
 
-            # Fill toggle
             if e.key == pygame.K_f:
-                filled = not filled  # переключение между заливкой и контуром
+                filled = not filled  
 
-            # Color switching
             if e.key == pygame.K_r: current_color = RED
             if e.key == pygame.K_g: current_color = GREEN
             if e.key == pygame.K_b: current_color = BLUE

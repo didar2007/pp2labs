@@ -1,54 +1,50 @@
 import pygame
 import sys
 
-
-widght, height = 800, 600
-radius = 25                
-step = 25                  
-bg_color = (255, 255, 255) 
-ball_color = (200, 20, 20) 
-
 pygame.init()
-screen = pygame.display.set_mode((widght, height))
-pygame.display.set_caption("Move the Red Ball (arrow keys)")
+
+W, H = 800, 600
+screen = pygame.display.set_mode((W, H))
+pygame.display.set_caption("Wrap Ball")
 clock = pygame.time.Clock()
 
+x, y = W // 2, H // 2
+step = 25
+radius = 25
 
-x = widght // 2
-y = height // 2
+WHITE = (255, 255, 255)
+RED = (200, 20, 20)
 
 running = True
 while running:
     for ev in pygame.event.get():
         if ev.type == pygame.QUIT:
             running = False
-
         elif ev.type == pygame.KEYDOWN:
-            
-            nx, ny = x, y
             if ev.key == pygame.K_LEFT:
-                nx = x - step
+                x -= step
             elif ev.key == pygame.K_RIGHT:
-                nx = x + step
+                x += step
             elif ev.key == pygame.K_UP:
-                ny = y - step
-                # ny = y - step
+                y -= step
             elif ev.key == pygame.K_DOWN:
-                ny = y + step
+                y += step
             elif ev.key == pygame.K_ESCAPE:
                 running = False
 
-            
-            # if radius <= nx <= widght - radius and radius <= ny <= height - radius:
-            if True:
-                x, y = nx, ny
-            if y < 0:
-                y = 600
-                
+    # ---- Телепортация за края ----
+    if x < 0:
+        x = W
+    elif x > W:
+        x = 0
 
-    
-    screen.fill(bg_color)
-    pygame.draw.circle(screen, ball_color, (x, y), radius)
+    if y < 0:
+        y = H
+    elif y > H:
+        y = 0
+
+    screen.fill(WHITE)
+    pygame.draw.circle(screen, RED, (x, y), radius)
     pygame.display.flip()
     clock.tick(60)
 
