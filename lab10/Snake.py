@@ -4,7 +4,6 @@ import json
 
 from db import get_user, create_user, save_game_state, get_connection
 
-# ================== НАСТРОЙКИ ==================
 pygame.init()
 
 WIDTH, HEIGHT = 600, 600
@@ -21,7 +20,6 @@ WHITE = (255, 255, 255)
 GREEN = (0, 200, 0)
 RED = (200, 0, 0)
 
-# ================== УРОВНИ ==================
 LEVEL_SPEED = {
     1: 8,
     2: 12,
@@ -45,7 +43,6 @@ def update_user_level(user_id, level):
     conn.commit()
     conn.close()
 
-# ================== ВВОД ИМЕНИ ==================
 def username_screen():
     username = ""
 
@@ -80,7 +77,6 @@ def username_screen():
                 elif event.unicode.isalnum() and len(username) < 15:
                     username += event.unicode
 
-# ================== ПОЛЬЗОВАТЕЛЬ ==================
 username = username_screen()
 
 user = get_user(username)
@@ -93,7 +89,6 @@ else:
 
 speed = LEVEL_SPEED[level]
 
-# ================== ИГРА ==================
 snake = [(10, 10)]
 direction = (1, 0)
 food = (random.randint(0, 29), random.randint(0, 29))
@@ -101,7 +96,6 @@ score = 0
 paused = False
 running = True
 
-# ================== СОХРАНЕНИЕ ==================
 def save_game():
     state = json.dumps({
         "snake": snake,
@@ -116,7 +110,6 @@ def save_game():
         state_json=state
     )
 
-# ================== ГЛАВНЫЙ ЦИКЛ ==================
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -150,7 +143,6 @@ while running:
         clock.tick(5)
         continue
 
-    # ---------- движение ----------
     head_x, head_y = snake[0]
     new_head = (head_x + direction[0], head_y + direction[1])
 
@@ -178,7 +170,6 @@ while running:
     else:
         snake.pop()
 
-    # ---------- отрисовка ----------
     screen.fill(BLACK)
 
     for part in snake:

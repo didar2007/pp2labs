@@ -2,7 +2,6 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 
-# --- Подключение к базе ---
 def get_connection():
     return psycopg2.connect(
         host="localhost",
@@ -12,8 +11,7 @@ def get_connection():
         cursor_factory=RealDictCursor
     )
 
-
-# --- Проверка, существует ли пользователь ---
+# Ищет пользователя в базе по имени
 def get_user(username):
     conn = get_connection()
     cur = conn.cursor()
@@ -22,8 +20,7 @@ def get_user(username):
     conn.close()
     return user
 
-
-# --- Создание нового пользователя ---
+# Создаёт нового пользователя и возвращает его user_id
 def create_user(username):
     conn = get_connection()
     cur = conn.cursor()
@@ -36,8 +33,7 @@ def create_user(username):
     conn.close()
     return user_id
 
-
-# --- Сохранение результата игры (например при паузе) ---
+# Сохраняет текущее состояние игры, т.е очки, уровень и положение змейки
 def save_game_state(user_id, score, level, state_json):
     conn = get_connection()
     cur = conn.cursor()
@@ -50,6 +46,7 @@ def save_game_state(user_id, score, level, state_json):
     conn.commit()
     conn.close()
 
+# Обновляет уровень пользователя в таблице users
 def update_user_level(user_id, level):
     conn = get_connection()
     cur = conn.cursor()
@@ -60,7 +57,7 @@ def update_user_level(user_id, level):
     conn.commit()
     conn.close()
 
-
+# Получает последнее сохранённое состояние игры пользователя
 def get_last_save(user_id):
     conn = get_connection()
     cur = conn.cursor()
